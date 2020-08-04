@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
@@ -6,7 +7,7 @@ using OpenTracing;
 namespace NetCoreApp.Controllers
 {
     [ApiController]
-    [Route("netcoreapp")]
+    [Route("")]
     public class DefaultController : ControllerBase
     {
         private readonly ILogger<DefaultController> _logger;
@@ -31,6 +32,26 @@ namespace NetCoreApp.Controllers
             {
                 Random random = new Random();
                 int value = random.Next();
+                _logger.LogInformation("random: " + value);
+                RandomResponseDTO randomResponseDTO = new RandomResponseDTO{
+                    Value = value
+                };
+                return randomResponseDTO;
+            }
+        }
+
+        [HttpGet]
+        [Route("hang-up-random")]
+        public RandomResponseDTO HangUpRandom()
+        { 
+            var operationName = "GET::hang-up-random";
+            var builder = _tracer.BuildSpan(operationName);
+            using (var scope = builder.StartActive(true))
+            {
+                Task.Delay(30000).Wait();
+                Random random = new Random();
+                int value = random.Next();
+                
                 _logger.LogInformation("random: " + value);
                 RandomResponseDTO randomResponseDTO = new RandomResponseDTO{
                     Value = value

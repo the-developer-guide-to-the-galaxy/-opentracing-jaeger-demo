@@ -4,6 +4,10 @@ public class ResultDTO {
 
 	private Integer value;
 	
+	public ResultDTO() {
+		super();
+	}
+
 	public ResultDTO(Integer value) {
 		super();
 		this.value = value;

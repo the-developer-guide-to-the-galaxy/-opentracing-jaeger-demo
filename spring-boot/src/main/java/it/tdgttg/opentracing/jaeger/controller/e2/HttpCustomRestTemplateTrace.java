@@ -1,4 +1,4 @@
-package it.tdgttg.opentracing.jaeger.controller.e1;
+package it.tdgttg.opentracing.jaeger.controller.e2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +14,18 @@ import it.tdgttg.opentracing.jaeger.dto.ResultDTO;
 
 @RestController
 @RequestMapping(
-	path="http-trace-custom-rest-template", 
+	path="http-full-trace", 
 	produces=MediaType.APPLICATION_JSON_VALUE
 )
-public class HttpFullTrace {
+public class HttpCustomRestTemplateTrace {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpFullTrace.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpCustomRestTemplateTrace.class);
 
 	@Autowired
 	IAppConfiguration appConfiguration;
 
-	RestTemplate restTemplate = new RestTemplate();
+	@Autowired
+	RestTemplate restTemplate;
 
 	@GetMapping
 	public ResultDTO index() {
