@@ -9,10 +9,17 @@ export class AppController {
   ) {}
 
   @Get("notify")
-  index(): object {
+  notify(): object {
     return {
       status: "ok"
     }
+  }
+
+  @Get("hang-up-notify")
+  async hangUpNotify(): Promise<object> {
+    return new Promise((resolve, _)=>{
+      setTimeout(()=>resolve({status: "ok"}), 25000)
+    })
   }
 
 }

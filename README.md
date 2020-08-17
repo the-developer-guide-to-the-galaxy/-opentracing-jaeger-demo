@@ -3,7 +3,7 @@
 Run **Jaeger** *all-in-one* via **Docker**
 
 ```sh
-docker run -d --rm --name jaeger \
+docker run -d --rm \
   -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
   -p 5775:5775/udp \
   -p 6831:6831/udp \
@@ -13,7 +13,21 @@ docker run -d --rm --name jaeger \
   -p 14268:14268 \
   -p 14250:14250 \
   -p 9411:9411 \
+  --name jaeger \
   jaegertracing/all-in-one:1.18
+```
+
+```sh
+docker run -d --rm \
+  -d --hostname opentracing-rabbit \
+  -p 4369:4369 \
+  -p 5671:5671 \
+  -p 5672:5672 \
+  -p 25672:25672 \
+  -p 15671:15671 \
+  -p 15672:15672 \
+  --name opentracing-rabbit \
+  rabbitmq:3-management
 ```
 
 You can inspect Jaeger web on localhost's port 16686

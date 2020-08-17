@@ -88,5 +88,14 @@ curl 'http://localhost:8080/http-async-hystrix-trace' | python -m json.tool
 
 depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
 
+#### endpoint 7 
+#### HttpAsyncRabbitTrace
 
+This endpoint makes use of Hystrix command for actions timeout. 
+
+```sh
+curl 'http://localhost:8080/http-async-rabbit-trace' | python -m json.tool
+```
+
+depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
 

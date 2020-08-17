@@ -1,4 +1,9 @@
-# Medical Supplies Backend
+# 
+
+export JAEGER_SERVICE_NAME=netcore \
+export JAEGER_AGENT_HOST=192.168.0.31 \
+export JAEGER_AGENT_PORT=6831 # compact encoding \
+dotnet run
 
 ## Requirements
 
