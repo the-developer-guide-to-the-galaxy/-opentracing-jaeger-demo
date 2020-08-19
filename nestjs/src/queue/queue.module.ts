@@ -10,9 +10,6 @@ import { AMQPModule } from './nestx-amqp/amqp.module'
       urls: ['amqp://guest:guest@localhost:5672']
     })
   ],
-  controllers: [
-
-  ],
   providers: [
     QueueService
   ]

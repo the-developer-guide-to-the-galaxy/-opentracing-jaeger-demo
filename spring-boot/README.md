@@ -89,13 +89,36 @@ curl 'http://localhost:8080/http-async-hystrix-trace' | python -m json.tool
 depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
 
 #### endpoint 7 
-#### HttpAsyncRabbitTrace
+#### AmqpAsyncBrokenTrace
 
-This endpoint makes use of Hystrix command for actions timeout. 
+This endpoint generates disconnected trace though amqp messaging. 
 
 ```sh
-curl 'http://localhost:8080/http-async-rabbit-trace' | python -m json.tool
+curl 'http://localhost:8080/amqp-async-broken-trace' | python -m json.tool
 ```
 
 depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
+
+
+#### endpoint 8 
+#### AmqpAsyncFixedTrace
+
+
+This endpoint generates disconnected trace though amqp messaging. 
+
+```sh
+curl 'http://localhost:8080/amqp-async-broken-trace' | python -m json.tool
+```
+
+depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
+
+io.opentracing.contrib.spring.rabbitmq.RabbitMqTracingAutoConfiguration
+
+https://github.com/opentracing-contrib/java-spring-rabbitmq
+
+org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+
+
+
 

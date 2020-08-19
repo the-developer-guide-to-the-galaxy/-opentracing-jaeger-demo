@@ -6,10 +6,14 @@ import { AMQPExplorer } from './amqp.explorer'
 import { getAMQPConnectionOptionsToken, getAMQPConnectionToken } from './token.util'
 import { createAMQPConnection, createAsyncAMQPConnectionOptions } from 'nestx-amqp'
 import { AMQPAsyncConnectionOptions, AMQPConnectionOptions } from 'nestx-amqp'
+import { SharedModule } from 'src/shared/shared.module';
 
 @Global()
 @Module({
-  imports: [DiscoveryModule],
+  imports: [
+    DiscoveryModule,
+    SharedModule
+  ],
 })
 export class AMQPModule implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly moduleRef: ModuleRef) {}

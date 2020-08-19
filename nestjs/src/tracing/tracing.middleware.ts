@@ -4,14 +4,12 @@ import { Tracer, FORMAT_HTTP_HEADERS } from 'opentracing';
 
 @Injectable()
 export class TracingMiddleware implements NestMiddleware {
-  
+
   logger: Logger = new Logger("TracingMiddleware")
 
   constructor(
     private readonly tracer: Tracer
-  ) {
-
-  }
+  ) { }
 
   use(req: Request, res: Response, next: Function) {
     const parentSpanContext = this.tracer.extract(FORMAT_HTTP_HEADERS, req.headers)

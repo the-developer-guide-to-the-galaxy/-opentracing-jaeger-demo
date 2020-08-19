@@ -1,5 +1,5 @@
 import { DiscoveryService } from '@golevelup/nestjs-discovery'
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit, Inject } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { AmqpConnectionManager } from 'amqp-connection-manager'
 import {
@@ -21,10 +21,14 @@ import { Consumer } from './consumer'
 import { ExchangeProducer } from 'nestx-amqp'
 import { QueueProducer } from 'nestx-amqp'
 import { getAMQPConnectionToken } from './token.util'
+import { Tracer } from 'opentracing'
 
 @Injectable()
 export class AMQPExplorer implements OnModuleInit {
   private readonly logger = new Logger(AMQPExplorer.name)
+
+  @Inject()
+  tracer: Tracer;
 
   constructor(private readonly moduleRef: ModuleRef, private readonly discoveryService: DiscoveryService) {}
 
@@ -33,6 +37,7 @@ export class AMQPExplorer implements OnModuleInit {
   }
 
   async explore() {
+    console.log("tracer", this.tracer);
     await this.registerPublishQueueMethods()
     await this.registerPublishExchangeMethods()
     await this.registerSubscribeQueueMethods()

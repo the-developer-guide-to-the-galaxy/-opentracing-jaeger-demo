@@ -13,7 +13,7 @@ docker run -d --rm \
   -p 14268:14268 \
   -p 14250:14250 \
   -p 9411:9411 \
-  --name jaeger \
+  --name opentracing-jaeger \
   jaegertracing/all-in-one:1.18
 ```
 

@@ -1,4 +1,4 @@
-package it.tdgttg.opentracing.jaeger.controller.e7;
+package it.tdgttg.opentracing.jaeger.controller.e8;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -8,8 +8,7 @@ import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +25,10 @@ import it.tdgttg.opentracing.jaeger.configuration.IAppConfiguration;
 import it.tdgttg.opentracing.jaeger.dto.ResultDTO;
 
 @RestController
-@RequestMapping(path = "http-async-rabbit-trace", produces = MediaType.APPLICATION_JSON_VALUE)
-public class HttpAsyncRabbitTrace {
+@RequestMapping(path = "amqp-async-fixed-trace", produces = MediaType.APPLICATION_JSON_VALUE)
+public class AmqpAsyncFixedTrace {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpAsyncRabbitTrace.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AmqpAsyncFixedTrace.class);
 
 	@Autowired
 	IAppConfiguration appConfiguration;
@@ -39,6 +38,9 @@ public class HttpAsyncRabbitTrace {
 	
 	@Autowired
 	ConnectionFactory connectionFactory;
+
+	@Autowired
+	AmqpTemplate amqpTemplate;
 
 	@GetMapping
 	public ResultDTO index() {
@@ -75,10 +77,9 @@ public class HttpAsyncRabbitTrace {
 
 	private Runnable notify(String firstHost) {
 		return new TimeoutHystrixCommand<Void>(()-> {
+			LOGGER.info("sending message inside Hystrix command");
+			amqpTemplate.convertAndSend("opentracing", "{\"message\":\"notify\"");
 			// use path join instead string concatenation
-			CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(connectionFactory);
-			RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
-			rabbitTemplate.convertAndSend("opentracing", "{\"message\":\"notify\"");
 			//String norifyResult = restTemplate.getForObject(firstHost + "/notify", String.class);
 			//LOGGER.info(norifyResult);
 			return null;
