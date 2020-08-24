@@ -5,7 +5,7 @@ import { Tracer, FORMAT_HTTP_HEADERS } from 'opentracing';
 @Injectable()
 export class TracingMiddleware implements NestMiddleware {
 
-  logger: Logger = new Logger("TracingMiddleware")
+  private readonly logger: Logger = new Logger("TracingMiddleware")
 
   constructor(
     private readonly tracer: Tracer
@@ -26,6 +26,7 @@ export class TracingMiddleware implements NestMiddleware {
       this.logger.log("span finish on close")
     })
     res.on('error', ()=>{
+      //TODO tag span
       span.finish()
       this.logger.log("span finish on error")
     })

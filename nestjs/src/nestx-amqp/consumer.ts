@@ -30,14 +30,17 @@ export class Consumer implements OnModuleInit {
           channel.assertQueue(this.queue.name, this.queue.options),
           channel.prefetch(this.options ? this.options.prefetch : 1),
           channel.consume(this.queue.name, (message) => {
-            var content = message.content.toString()
-            try{
-              content = JSON.parse(content)
+            message.json = ()=>{
+              var content = message.content.toString()
+              try{
+                return JSON.parse(content)
+              }
+              catch(e){
+                this.logger.warn("Cannot parse json")
+                return null;
+              }
             }
-            catch(e){
-              this.logger.warn("Cannot parse json")
-            }
-            this.handle(content)
+            this.handle(message)
               .then(() => {
                 channel.ack(message)
               })
@@ -68,7 +71,7 @@ export class Consumer implements OnModuleInit {
     this.$interceptorProviders = interceptorProviders
   }
 
-  private async handle(content) {
+  private async handle(message) {
     const handleFn = this.$handler
     const handlerContext = this.$context
     const interceptorProviders = this.$interceptorProviders
@@ -80,15 +83,15 @@ export class Consumer implements OnModuleInit {
         throw new Error(`${className} @AmqpInterceptor does not implements 'receive' function`)
       }
       else{
-        return async function(interceptContent){
+        return async function(interceptMessage){
           logger.debug(`Calling ${className} @AmqpInterceptor 'receive' function`)
-          instance.receive(interceptContent, next)
+          instance.receive(interceptMessage, next)
         }
       }
-    }, async function(updateContent){
-      return handleFn.call(handlerContext, updateContent)
+    }, async function(updateMessage){
+      return handleFn.call(handlerContext, updateMessage)
     }) as any;
-    return chain(content)
+    return chain(message)
   }
 
   private async requeue(message: Message, error) {

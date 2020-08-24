@@ -1,7 +1,7 @@
 
 export interface IAmqpInterceptor{
-  receive?(content:any, next:(updateContent:any)=>Promise<any>):Promise<void>;
-  send?(content:any, next:(updateContent:any)=>Promise<any>):Promise<void>;
+  receive?(message:any, next:(updateContent:any)=>Promise<any>):Promise<void>;
+  send?(message:any, next:(updateContent:any)=>Promise<any>):Promise<void>;
 }
 
 

@@ -12,8 +12,8 @@ export class QueueService {
 
   @UseAMQPConnection('OPENTRACING_QUEUE')
   @SubscribeQueue("opentracing")
-  async handleOpentracing(content: any, properties: any): Promise<object> {
-    this.logger.log(content)
+  async handleOpentracing(message: any): Promise<object> {
+    this.logger.log(message)
     return Promise.resolve({
       status: "ok"
     });

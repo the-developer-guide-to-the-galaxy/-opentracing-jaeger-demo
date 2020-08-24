@@ -107,7 +107,7 @@ depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between 
 This endpoint generates disconnected trace though amqp messaging. 
 
 ```sh
-curl 'http://localhost:8080/amqp-async-broken-trace' | python -m json.tool
+curl 'http://localhost:8080/amqp-async-fixed-trace' | python -m json.tool
 ```
 
 depends on `TracedHystrixConcurrencyStrategy` registry to connect trace between services
