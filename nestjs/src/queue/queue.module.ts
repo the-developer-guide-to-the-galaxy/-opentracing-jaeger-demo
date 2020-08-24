@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { QueueService } from './queue.service';
 //import { AMQPModule } from 'nestx-amqp'
-import { AMQPModule } from './nestx-amqp/amqp.module'
+import { AMQPModule } from 'src/nestx-amqp/amqp.module'
 
 @Module({
   imports: [

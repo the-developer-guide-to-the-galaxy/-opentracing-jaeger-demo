@@ -2,13 +2,17 @@ import { AmqpConnectionManager, ChannelWrapper } from 'amqp-connection-manager'
 import { OnModuleInit, Logger } from '@nestjs/common'
 import { Message, Options } from 'amqplib'
 import { ConsumeQueueOptions, Queue, RETRY_HEADERS } from 'nestx-amqp'
+import { AmqpInterceptorOptions } from './amqp.interceptor'
+import { DiscoveredClassWithMeta } from '@golevelup/nestjs-discovery'
 
 export class Consumer implements OnModuleInit {
   private $channel: ChannelWrapper
   private $handler: (content, consumeOptions?) => {}
   private $context
+  private $interceptorProviders: DiscoveredClassWithMeta<AmqpInterceptorOptions>[]
 
-  logger: Logger = new Logger("CustomNesxAMQPConsumer")
+
+  private readonly logger: Logger = new Logger("CustomNesxAMQPConsumer")
 
   constructor(
     readonly connection: AmqpConnectionManager,
@@ -31,7 +35,7 @@ export class Consumer implements OnModuleInit {
               content = JSON.parse(content)
             }
             catch(e){
-              this.logger.log("Cannot parse json")
+              this.logger.warn("Cannot parse json")
             }
             this.handle(content)
               .then(() => {
@@ -60,10 +64,31 @@ export class Consumer implements OnModuleInit {
     this.$context = context
   }
 
+  async applyInterceptorProviders(interceptorProviders) {
+    this.$interceptorProviders = interceptorProviders
+  }
+
   private async handle(content) {
     const handleFn = this.$handler
     const handlerContext = this.$context
-    return handleFn.call(handlerContext, content)
+    const interceptorProviders = this.$interceptorProviders
+    const logger = this.logger
+    const chain = interceptorProviders.reduce((next, interceptorProvider)=>{
+      const className = interceptorProvider.discoveredClass.name
+      const instance = interceptorProvider.discoveredClass.instance as any;
+      if(typeof instance.receive != 'function'){
+        throw new Error(`${className} @AmqpInterceptor does not implements 'receive' function`)
+      }
+      else{
+        return async function(interceptContent){
+          logger.debug(`Calling ${className} @AmqpInterceptor 'receive' function`)
+          instance.receive(interceptContent, next)
+        }
+      }
+    }, async function(updateContent){
+      return handleFn.call(handlerContext, updateContent)
+    }) as any;
+    return chain(content)
   }
 
   private async requeue(message: Message, error) {

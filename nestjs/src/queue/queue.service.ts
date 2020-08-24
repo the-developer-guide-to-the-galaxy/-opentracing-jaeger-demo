@@ -4,17 +4,16 @@ import { SubscribeQueue, UseAMQPConnection } from 'nestx-amqp';
 @Injectable()
 export class QueueService {
 
-  logger: Logger = new Logger("QueueController")
+  logger: Logger = new Logger("QueueService")
 
   constructor() {
-    
+
   }
 
   @UseAMQPConnection('OPENTRACING_QUEUE')
   @SubscribeQueue("opentracing")
-  async notify(message: any, error: any): Promise<object> {
-    this.logger.log(this)
-    this.logger.log(message)
+  async handleOpentracing(content: any, properties: any): Promise<object> {
+    this.logger.log(content)
     return Promise.resolve({
       status: "ok"
     });

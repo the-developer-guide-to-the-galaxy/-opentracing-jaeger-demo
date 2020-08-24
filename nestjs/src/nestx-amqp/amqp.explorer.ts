@@ -1,4 +1,4 @@
-import { DiscoveryService } from '@golevelup/nestjs-discovery'
+import { DiscoveryService, DiscoveredClassWithMeta } from '@golevelup/nestjs-discovery'
 import { Injectable, Logger, OnModuleInit, Inject } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { AmqpConnectionManager } from 'amqp-connection-manager'
@@ -21,26 +21,45 @@ import { Consumer } from './consumer'
 import { ExchangeProducer } from 'nestx-amqp'
 import { QueueProducer } from 'nestx-amqp'
 import { getAMQPConnectionToken } from './token.util'
-import { Tracer } from 'opentracing'
+import { AmqpInterceptorOptions } from './amqp.interceptor'
+
 
 @Injectable()
 export class AMQPExplorer implements OnModuleInit {
+
   private readonly logger = new Logger(AMQPExplorer.name)
 
-  @Inject()
-  tracer: Tracer;
+  private amqpInterceptorProviders: DiscoveredClassWithMeta<AmqpInterceptorOptions>[]
 
-  constructor(private readonly moduleRef: ModuleRef, private readonly discoveryService: DiscoveryService) {}
+  constructor(
+    private readonly moduleRef: ModuleRef,
+    private readonly discoveryService: DiscoveryService
+  ) {}
 
   async onModuleInit() {
     await this.explore()
   }
 
   async explore() {
-    console.log("tracer", this.tracer);
+    await this.discoveryAmpqInterceptorClasses()
     await this.registerPublishQueueMethods()
     await this.registerPublishExchangeMethods()
     await this.registerSubscribeQueueMethods()
+  }
+
+
+  private async discoveryAmpqInterceptorClasses() {
+    const amqpInterceptorProviders = await this.discoveryService.providersWithMetaAtKey<AmqpInterceptorOptions>(
+      'AMQP_INTERCEPTOR'
+    );
+    this.amqpInterceptorProviders = amqpInterceptorProviders
+    for (const amqpInterceptorProvider of amqpInterceptorProviders) {
+      const handlerContext = amqpInterceptorProvider.discoveredClass.instance
+      const className = amqpInterceptorProvider.discoveredClass.name;
+      this.logger.log(
+        `Found ${className} using @AmpqInterceptor()`
+      )
+    }
   }
 
   /**
@@ -66,11 +85,14 @@ export class AMQPExplorer implements OnModuleInit {
       Reflect.defineMetadata(PUBLISH_QUEUE_PRODUCER_METADATA_TOKEN, producer, originalHandler)
       Reflect.defineMetadata(PUBLISH_QUEUE_CONTEXT_METADATA_TOKEN, handlerContext, originalHandler)
 
+      const className = method.discoveredMethod.parentClass.name;
+      const methodName = method.discoveredMethod.methodName;
       this.logger.log(
-        `Found ${method.discoveredMethod.parentClass.name}#${method.discoveredMethod.methodName} using @PublishQueue()`
+        `Found ${className}#${methodName} using @PublishQueue()`
       )
     }
   }
+
 
   private async registerPublishExchangeMethods() {
     const publishExchangeMethods = await this.discoveryService.providerMethodsWithMetaAtKey(
@@ -91,9 +113,10 @@ export class AMQPExplorer implements OnModuleInit {
 
       Reflect.defineMetadata(PUBLISH_EXCHANGE_PRODUCER_METADATA_TOKEN, producer, originalHandler)
       Reflect.defineMetadata(PUBLISH_EXCHANGE_CONTEXT_METADATA_TOKEN, handlerContext, originalHandler)
-
+      const className = method.discoveredMethod.parentClass.name;
+      const methodName = method.discoveredMethod.methodName;
       this.logger.log(
-        `Found ${method.discoveredMethod.parentClass.name}#${method.discoveredMethod.methodName} using @PublishExchange()`
+        `Found ${className}#${methodName} using @PublishExchange()`
       )
     }
   }
@@ -102,32 +125,42 @@ export class AMQPExplorer implements OnModuleInit {
     const subscribeQueueMethods = await this.discoveryService.providerMethodsWithMetaAtKey(
       SUBSCRIBE_QUEUE_METADATA_TOKEN
     )
-
     for (const method of subscribeQueueMethods) {
       const originalHandler = method.discoveredMethod.handler
-
-      const connectionName = Reflect.getMetadata(USE_AMQP_CONNECTION_TOKEN, originalHandler)
+      const connectionName = Reflect.getMetadata(
+        USE_AMQP_CONNECTION_TOKEN,
+        originalHandler
+      )
       const injectConnectionToken = getAMQPConnectionToken(connectionName)
-      const connection: AmqpConnectionManager = this.moduleRef.get<AmqpConnectionManager>(injectConnectionToken)
-
-      const queue: Queue = Reflect.getMetadata(SUBSCRIBE_QUEUE_METADATA_TOKEN, originalHandler)
+      const connection: AmqpConnectionManager = this.moduleRef
+      .get<AmqpConnectionManager>(injectConnectionToken)
+      const queue: Queue = Reflect.getMetadata(
+        SUBSCRIBE_QUEUE_METADATA_TOKEN,
+        originalHandler
+      )
       const consumeOptions: ConsumeQueueOptions = Reflect.getMetadata(
         SUBSCRIBE_QUEUE_CONSUME_OPTIONS_METADATA_TOKEN,
         originalHandler
       )
-
       const handlerContext = method.discoveredMethod.parentClass.instance
-
       const consumer = new Consumer(connection, queue, consumeOptions)
-
       await consumer.applyHandler(originalHandler)
       await consumer.applyContext(handlerContext)
-
-      Reflect.defineMetadata(SUBSCRIBE_QUEUE_CONSUMER_METADATA_TOKEN, consumer, originalHandler)
-      Reflect.defineMetadata(SUBSCRIBE_QUEUE_CONTEXT_METADATA_TOKEN, handlerContext, originalHandler)
-
+      await consumer.applyInterceptorProviders(this.amqpInterceptorProviders)
+      Reflect.defineMetadata(
+        SUBSCRIBE_QUEUE_CONSUMER_METADATA_TOKEN,
+        consumer,
+        originalHandler
+      )
+      Reflect.defineMetadata(
+        SUBSCRIBE_QUEUE_CONTEXT_METADATA_TOKEN,
+        handlerContext,
+        originalHandler
+      )
+      const className = method.discoveredMethod.parentClass.name;
+      const methodName = method.discoveredMethod.methodName;
       this.logger.log(
-        `Found ${method.discoveredMethod.parentClass.name}#${method.discoveredMethod.methodName} using @SubscribeQueue()`
+        `Found ${className}#${methodName} using @SubscribeQueue()`
       )
       await consumer.listen()
     }

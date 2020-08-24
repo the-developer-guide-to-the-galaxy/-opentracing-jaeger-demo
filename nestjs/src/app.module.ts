@@ -14,6 +14,6 @@ import { QueueModule } from './queue/queue.module';
   ],
   providers: [
     AppService
-  ],
+  ]
 })
 export class AppModule {}
