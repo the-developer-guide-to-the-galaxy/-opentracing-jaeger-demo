@@ -67,7 +67,7 @@ public class AmqpAsyncBrokenTrace {
 
 	private Supplier<ResultDTO> random(String secondHost) {
 		return new TimeoutHystrixCommand<ResultDTO>(()-> {
-			// use path join instead string concatenation
+			//TODO: use path join instead string concatenation
 			ResultDTO response = restTemplate.getForObject(secondHost + "/random", ResultDTO.class);
 			return response;
 		}, 5000, "random").asSupplier();
@@ -76,12 +76,9 @@ public class AmqpAsyncBrokenTrace {
 	private Runnable notify(String firstHost) {
 		return new TimeoutHystrixCommand<Void>(()-> {
 			LOGGER.info("sending message inside Hystrix command");
-			// use path join instead string concatenation
 			CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(connectionFactory);
 			RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
 			rabbitTemplate.convertAndSend("opentracing", "{\"message\":\"notify\"");
-			//String norifyResult = restTemplate.getForObject(firstHost + "/notify", String.class);
-			//LOGGER.info(norifyResult);
 			return null;
 		}, 5000, "notify").asRunnable();
 	}

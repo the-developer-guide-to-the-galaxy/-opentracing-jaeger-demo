@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.tracer.configuration.TracerAutoConfiguration;
+import it.tdgttg.opentracing.jaeger.configuration.IAppConfiguration;
 
 @Configuration
 @ConditionalOnBean(Tracer.class)
@@ -18,8 +19,14 @@ public class TracedHystrixConcurrencyStrategyAutoConfiguration {
 	@Autowired
 	Tracer tracer;
 	
+	@Autowired
+	private IAppConfiguration appConfiguration;
+	
 	@PostConstruct
 	public void registerTracedHystrixConcurrencyStrategy() {
-		//TracedHystrixConcurrencyStrategy.registerIfAbsent(tracer);
+		if(appConfiguration.getHystrixStrategyEnabled()) {
+			TracedHystrixConcurrencyStrategy.registerIfAbsent(tracer);
+		}
 	}
+	
 }

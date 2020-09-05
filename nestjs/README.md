@@ -14,7 +14,7 @@ $ npm install
 
 ```
 export JAEGER_SERVICE_NAME=nest.js \
-export JAEGER_AGENT_HOST=192.168.0.31 \
+export JAEGER_AGENT_HOST=localhost \
 export JAEGER_AGENT_PORT=6832  # thrift-binary encoding \
 export JAEGER_REPORTER_LOG_SPANS=false
 ```

@@ -69,7 +69,7 @@ public class AmqpAsyncFixedTrace {
 
 	private Supplier<ResultDTO> random(String secondHost) {
 		return new TimeoutHystrixCommand<ResultDTO>(()-> {
-			// use path join instead string concatenation
+			//TODO: use path join instead string concatenation
 			ResultDTO response = restTemplate.getForObject(secondHost + "/random", ResultDTO.class);
 			return response;
 		}, 5000, "random").asSupplier();
@@ -79,9 +79,6 @@ public class AmqpAsyncFixedTrace {
 		return new TimeoutHystrixCommand<Void>(()-> {
 			LOGGER.info("sending message inside Hystrix command");
 			amqpTemplate.convertAndSend("opentracing", "{\"message\":\"notify\"");
-			// use path join instead string concatenation
-			//String norifyResult = restTemplate.getForObject(firstHost + "/notify", String.class);
-			//LOGGER.info(norifyResult);
 			return null;
 		}, 5000, "notify").asRunnable();
 	}

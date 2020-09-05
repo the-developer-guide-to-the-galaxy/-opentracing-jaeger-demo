@@ -1,4 +1,13 @@
+# OpenTracing & Jaeger demo
 
+This is a demo of **OpenTracing** and **Jaeger** technologies through multiple languages applications
+
+https://opentracing.io    
+https://www.jaegertracing.io
+
+## Jaeger all-in-one
+
+It is used to collect and inspect traces and spans
 
 Run **Jaeger** *all-in-one* via **Docker**
 
@@ -17,6 +26,18 @@ docker run -d --rm \
   jaegertracing/all-in-one:1.18
 ```
 
+You shoud see **Jaeger**'s web on localhost's port 16686
+
+## Rabbit
+
+RabbitMQ is an open source message broker.
+
+https://www.rabbitmq.com/
+
+It is used to add reliability to asynchronous events
+
+Run **Jaeger** *all-in-one* via **Docker**
+
 ```sh
 docker run -d --rm \
   -d --hostname opentracing-rabbit \
@@ -30,29 +51,39 @@ docker run -d --rm \
   rabbitmq:3-management
 ```
 
-You can inspect Jaeger web on localhost's port 16686
+You shoud see **Rabbit**'s web console on localhost's port 15672
 
-Use `ifconfig` to get local IP address. Host IP address is needed as env var (in my case IP address is 192.168.0.31)
+
+If you are running this demo on Windows maybe you should use docker-machine IP address to connect applications and containers, which is usually `192.168.99.100`
 
 Java
 ```ini
 JAEGER_SERVICE_NAME=springboot
-JAEGER_AGENT_HOST=192.168.0.31
+JAEGER_AGENT_HOST=localhost
 JAEGER_AGENT_PORT=6831 # compact encoding
 JAEGER_REPORTER_LOG_SPANS=false
+AMQP_HOST=localhost
+AMQP_PASSWORD=guest
+AMQP_PORT=5672
+AMQP_USERNAME=guest
+HOSTS=http://localhost:3000,http://localhost:5000
+HYSTRIX_STRATEGY_ENABLED=false
 ```
 
 Netcore
 ```ini
 JAEGER_SERVICE_NAME=netcore
-JAEGER_AGENT_HOST=192.168.0.31
+JAEGER_AGENT_HOST=localhost
 JAEGER_AGENT_PORT=6831 # compact encoding
 ```
 
 Nest.js
 ```ini
 JAEGER_SERVICE_NAME=nest.js
-JAEGER_AGENT_HOST=192.168.0.31
+JAEGER_AGENT_HOST=localhost
 JAEGER_AGENT_PORT=6832  # thrift-binary encoding
 JAEGER_REPORTER_LOG_SPANS=false
 ```
+
+The application use **Sring Boot** as entry point. The available endpoints can be seen in project's [README](spring-boot/README.md)
+Alternatively there is a graphic [gallery](assets/gallery/diagram-1-a.md) that can help to uinderstand every aspect of this demo

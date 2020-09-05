@@ -62,7 +62,7 @@ public class HttpAsyncFixedTrace {
 		return new Supplier<ResultDTO>() {
 			@Override
 			public ResultDTO get() {
-				// use path join instead string concatenation
+				//TODO: use path join instead string concatenation
 				ResultDTO response = restTemplate.getForObject(secondHost + "/random", ResultDTO.class);
 				return response;
 			}
@@ -73,7 +73,7 @@ public class HttpAsyncFixedTrace {
 		return new Runnable() {
 			@Override
 			public void run() {
-				// use path join instead string concatenation
+				//TODO: use path join instead string concatenation
 				String norifyResult = restTemplate.getForObject(firstHost + "/notify", String.class);
 				LOGGER.info(norifyResult);
 			}

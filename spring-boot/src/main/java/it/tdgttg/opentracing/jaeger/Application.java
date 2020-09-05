@@ -12,9 +12,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import com.rabbitmq.client.ConnectionFactory;
+
+import it.tdgttg.opentracing.jaeger.configuration.IAppConfiguration;
 	
 @SpringBootApplication
 public class Application {
+	
+	private IAppConfiguration appConfiguration;
 	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
@@ -26,10 +30,10 @@ public class Application {
 	@Bean
 	public ConnectionFactory connectionFactory() throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
 		ConnectionFactory connectionFactory = new ConnectionFactory();
-		connectionFactory.setUsername("guest");
-		connectionFactory.setPassword("guest");
-		connectionFactory.setHost("192.168.0.31");
-		connectionFactory.setPort(5672);
+		connectionFactory.setUsername(appConfiguration.getAmqpUsername());
+		connectionFactory.setPassword(appConfiguration.getAmqpPassword());
+		connectionFactory.setHost(appConfiguration.getAmqpHost());
+		connectionFactory.setPort(appConfiguration.getAmqpPort());
 		return connectionFactory;
 	}
 

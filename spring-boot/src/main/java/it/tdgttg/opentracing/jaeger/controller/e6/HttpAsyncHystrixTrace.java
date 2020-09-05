@@ -60,7 +60,7 @@ public class HttpAsyncHystrixTrace {
 
 	private Supplier<ResultDTO> random(String secondHost) {
 		return new TimeoutHystrixCommand<ResultDTO>(()-> {
-			// use path join instead string concatenation
+			//TODO: use path join instead string concatenation
 			ResultDTO response = restTemplate.getForObject(secondHost + "/hang-up-random", ResultDTO.class);
 			return response;
 		}, 5000, "random").asSupplier();
@@ -68,7 +68,7 @@ public class HttpAsyncHystrixTrace {
 
 	private Runnable notify(String firstHost) {
 		return new TimeoutHystrixCommand<Void>(()-> {
-			// use path join instead string concatenation
+			//TODO: use path join instead string concatenation
 			String norifyResult = restTemplate.getForObject(firstHost + "/notify", String.class);
 			LOGGER.info(norifyResult);
 			return null;
