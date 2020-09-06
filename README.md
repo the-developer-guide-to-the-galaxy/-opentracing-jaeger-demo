@@ -86,4 +86,4 @@ JAEGER_REPORTER_LOG_SPANS=false
 ```
 
 The application use **Sring Boot** as entry point. The available endpoints can be seen in project's [README](spring-boot/README.md)
-Alternatively there is a graphic [gallery](assets/gallery/diagram-1-a.md) that can help to uinderstand every aspect of this demo
+Alternatively there is a graphic [gallery](assets/gallery/diagram-1-a.md) that can help to understand every aspect of this demo
