@@ -3,7 +3,7 @@
 This is a demo of **OpenTracing** and **Jaeger** technologies through multiple languages applications
 
 https://opentracing.io    
-https://www.jaegertracing.io
+https://jaegertracing.io
 
 ## Jaeger all-in-one
 
@@ -32,7 +32,7 @@ You shoud see **Jaeger**'s web on localhost's port 16686
 
 RabbitMQ is an open source message broker.
 
-https://www.rabbitmq.com/
+https://rabbitmq.com/
 
 It is used to add reliability to asynchronous events
 
