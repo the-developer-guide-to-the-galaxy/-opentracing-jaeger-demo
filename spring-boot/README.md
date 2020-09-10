@@ -74,7 +74,7 @@ io.opentracing.contrib.concurrent.TracedExecutorService
 This endpoint hangs up over another service. 
 
 ```sh
-curl 'http://localhost:8080/http-async-fixed-trace' | python -m json.tool
+curl 'http://localhost:8080/http-async-hang-up-trace' | python -m json.tool
 ```
 
 #### endpoint 6 

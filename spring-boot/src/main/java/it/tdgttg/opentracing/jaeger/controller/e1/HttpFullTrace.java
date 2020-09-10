@@ -14,7 +14,7 @@ import it.tdgttg.opentracing.jaeger.dto.ResultDTO;
 
 @RestController
 @RequestMapping(
-	path="http-trace-custom-rest-template", 
+	path="http-full-trace", 
 	produces=MediaType.APPLICATION_JSON_VALUE
 )
 public class HttpFullTrace {
@@ -23,8 +23,9 @@ public class HttpFullTrace {
 
 	@Autowired
 	IAppConfiguration appConfiguration;
-
-	RestTemplate restTemplate = new RestTemplate();
+	
+	@Autowired
+	RestTemplate restTemplate;
 
 	@GetMapping
 	public ResultDTO index() {

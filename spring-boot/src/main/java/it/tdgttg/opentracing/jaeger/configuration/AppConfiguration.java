@@ -15,7 +15,7 @@ public class AppConfiguration implements IAppConfiguration {
 	
 	private Boolean hystrixStrategyEnabled;
 	
-	private AmqpConfiguration amqp;
+	private AmqpConfiguration amqp = new AmqpConfiguration();
 
 	@Override
 	public String[] getHosts() {
@@ -41,6 +41,22 @@ public class AppConfiguration implements IAppConfiguration {
 		@NotNull
 		@Positive
 		protected Integer port;
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public void setPort(Integer port) {
+			this.port = port;
+		}
 		
 	}
 	
@@ -63,6 +79,25 @@ public class AppConfiguration implements IAppConfiguration {
 	public Integer getAmqpPort() {
 		return amqp.port;
 	}
+
+	public void setHosts(String[] hosts) {
+		this.hosts = hosts;
+	}
+
+	public void setHystrixStrategyEnabled(Boolean hystrixStrategyEnabled) {
+		this.hystrixStrategyEnabled = hystrixStrategyEnabled;
+	}
+
+	public AmqpConfiguration getAmqp() {
+		return amqp;
+	}
+
+	public void setAmqp(AmqpConfiguration amqp) {
+		this.amqp = amqp;
+	}
+	
+	
+	
 	
 
 }

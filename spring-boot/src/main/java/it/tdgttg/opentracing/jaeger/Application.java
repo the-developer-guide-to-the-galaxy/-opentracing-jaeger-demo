@@ -5,6 +5,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -18,6 +19,7 @@ import it.tdgttg.opentracing.jaeger.configuration.IAppConfiguration;
 @SpringBootApplication
 public class Application {
 	
+	@Autowired
 	private IAppConfiguration appConfiguration;
 	
 	@Bean
